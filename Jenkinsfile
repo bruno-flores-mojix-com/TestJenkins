@@ -2,8 +2,6 @@ pipeline {
     agent {
         docker {
             image 'agileek/ionic-framework:latest'
-            args '-u root:sudo -v $HOME/bTemp/JenkinsProjects:/myproject'
-//            args '-v $HOME/.m2:/myApp:rw'
         }
     }
     stages {
