@@ -48,14 +48,12 @@ pipeline {
     }
     post {
         success {
-            withCredentials([string(credentialsId: 'SLACKCHANNEL', variable: 'SLACKCHANNEL'), string(credentialsId: 'SLACKDOMAIN', variable: 'SLACKDOMAIN'), string(credentialsId: 'SLACKTOKEN', variable: 'SLACKTOKEN')]) {
-                echo 'Do something when it is successful'
-                slackSend channel: '$SLACKCHANNEL', color: 'good', message: 'Build Complete!', teamDomain: '$SLACKDOMAIN', token: '$SLACKTOKEN'
-            }
+            echo 'Do something when it is successful'
+            slackSend color: 'good', message: 'Build Complete!'
         }
         failure {
             echo 'Do something when it is failed'
-            slackSend channel: '$SLACKCHANNEL', color: '#c64211', message: 'There are errors on the build, please review it.', teamDomain: '$SLACKDOMAIN', token: '$SLACKTOKEN'
+            slackSend color: '#c64211', message: 'There are errors on the build, please review it.'
         }
     }
 }
