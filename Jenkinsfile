@@ -6,9 +6,6 @@ pipeline {
     }
     environment {
         CI = 'true'
-        SLACKCHANNEL = credentials('SLACKCHANNEL')
-        SLACKDOMAIN = credentials('SLACKDOMAIN')
-        SLACKTOKEN = credentials('SLACKTOKEN')
     }
     stages {
         stage("setup_env") {
@@ -51,8 +48,10 @@ pipeline {
     }
     post {
         success {
-            echo 'Do something when it is successful'
-            slackSend channel: '$SLACKCHANNEL', color: 'good', message: 'Build Complete!', teamDomain: '$SLACKDOMAIN', token: '$SLACKTOKEN'
+            withCredentials([string(credentialsId: 'SLACKCHANNEL', variable: 'SLACKCHANNEL'), string(credentialsId: 'SLACKDOMAIN', variable: 'SLACKDOMAIN'), string(credentialsId: 'SLACKTOKEN', variable: 'SLACKTOKEN')]) {
+                echo 'Do something when it is successful'
+                slackSend channel: '$SLACKCHANNEL', color: 'good', message: 'Build Complete!', teamDomain: '$SLACKDOMAIN', token: '$SLACKTOKEN'
+            }
         }
         failure {
             echo 'Do something when it is failed'
