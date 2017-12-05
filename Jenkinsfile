@@ -13,8 +13,12 @@ pipeline {
     }
     stage('install_dependencies') {
       steps {
-        sh 'npm install'
-        tool 'NPM'
+        withNPM(npmrcConfig: 'Npmrc-6.11.3') {
+          sh '''npm install
+npm install -g ionic
+npm install -g cordova'''
+        }
+        
       }
     }
     stage('build_android_application') {
