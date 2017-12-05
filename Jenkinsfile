@@ -1,10 +1,5 @@
 pipeline {
-  agent {
-    node {
-      label 'master'
-    }
-    
-  }
+  agent none
   stages {
     stage('setup_env') {
       steps {
@@ -14,6 +9,7 @@ pipeline {
     stage('install_dependencies') {
       steps {
         sh 'npm install'
+        tool 'NPM'
       }
     }
     stage('build_android_application') {
