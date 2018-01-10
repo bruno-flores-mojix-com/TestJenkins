@@ -3,6 +3,11 @@ node() {
     def commitHash = readFile( 'jenkins_pipeline_output.tmp').split("\r?\n")[0]
     env.GIT_COMMIT = commitHash
   nvm(nvmInstallURL: 'https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh', nvmIoJsOrgMirror: 'https://iojs.org/dist', nvmNodeJsOrgMirror: 'https://nodejs.org/dist', version: '6.11.3') {
+    stage('Installing dependencies') {
+      sh 'npm install -g ionic'
+      sh 'npm install -g cordova'
+      sh 'npm install -g ios-sim ios-deploy'
+    }
     stage('build cxi library') {
       // some block
       // sh 'nvm install 6.11.3'
