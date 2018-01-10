@@ -1,65 +1,50 @@
-pipeline {
-  agent {
-    node {
-      label 'master'
-    }
-    
-  }
-  stages {
-    stage('setup_env') {
-      steps {
-        sh 'echo "We should do something like: apt-get update -y"'
+node() {
+    sh ' git rev-parse --verify HEAD > jenkins_pipeline_output.tmp'
+    def commitHash = readFile( 'jenkins_pipeline_output.tmp').split("\r?\n")[0]
+    env.GIT_COMMIT = commitHash
+
+    stage('build cxi library') {
+      nvm(nvmInstallURL: 'https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh', nvmIoJsOrgMirror: 'https://iojs.org/dist', nvmNodeJsOrgMirror: 'https://nodejs.org/dist', version: '6.11.3') {
+      // some block
+      // sh 'nvm install 6.11.3'
+      // sh 'cd subdir1'
+        sh 'npm install @angular/http --save'
+        sh 'npm install @ionic/storage  --save'
+        // sh 'npm install ng2-interceptors --save'
+        sh 'npm install'
+        sh 'npm run build'
+        // sh 'cd dist'
+        // sh 'npm link'
+        // sh 'cd ../../'
       }
     }
-    stage('install_dependencies') {
-      steps {
-        withNPM(npmrcConfig: 'Npmrc-6.11.3') {
-          sh '''npm install
-npm install -g ionic
-npm install -g cordova'''
+
+    stage("Prepare") {
+            // writeFile file: 'www/fhconfig.json', text: params.FH_CONFIG_CONTENT
+            // sh 'rm -rf node_modules'
+            sh 'npm install'
+            sh "ionic cordova platform rm android"
+            sh "ionic cordova platfrom rm ios"
+            sh "ionic cordova platform add android"
+            sh "ionic cordova prepare android"
+            sh "ionic cordova platform add ios"
+            sh "ionic cordova prepare ios"
+        //    sh 'npm link @cxi/rest-client'
         }
-        
-      }
+
+    stage ("build") {
+    sh 'ionic cordova build android'
+    sh 'ionic cordova build ios'
     }
-    stage('build_android_application') {
-      steps {
-        sh 'ionic cordova platform add android'
-        sh 'ionic cordova build android'
-      }
+
+    stage ("sign") {
+    // add the signing for ios
+    // sign release for the application
     }
-    stage('install_application') {
-      steps {
-        sh 'echo "Should install to some device"'
-      }
+
+    stage ("archive")  {
+      // archive android
+      archiveArtifacts artifacts: "platforms/android/build/outputs/apk/android-debug.apk", excludes: 'platforms/android/build/outputs/apk/*-unaligned.apk'
+      // in next term will archive ios
     }
-    stage('test') {
-      steps {
-        sh 'echo "do some test here"'
-      }
-    }
-    stage('Deliver') {
-      steps {
-        sh 'echo "Steps before deliver, ex.: ./jenkins/scripts/deliver.sh"'
-        input 'Finished using the web site? (Click "Proceed" to continue)'
-        sh 'echo "Steps to upload the file at: ./jenkins/scripts/kill.sh"'
-      }
-    }
-  }
-  environment {
-    CI = 'true'
-  }
-  post {
-    success {
-      echo 'Do something when it is successful'
-      slackSend(color: 'good', message: 'Build Complete!')
-      
-    }
-    
-    failure {
-      echo 'Do something when it is failed'
-      slackSend(color: '#c64211', message: 'There are errors on the build, please review it.')
-      
-    }
-    
-  }
 }
