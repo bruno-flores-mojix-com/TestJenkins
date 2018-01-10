@@ -2,6 +2,9 @@ node() {
     sh ' git rev-parse --verify HEAD > jenkins_pipeline_output.tmp'
     def commitHash = readFile( 'jenkins_pipeline_output.tmp').split("\r?\n")[0]
     env.GIT_COMMIT = commitHash
+    environment {
+        PATH = '/Users/admin/Library/Android/sdk/platform-tools:/Users/admin/Library/Android/sdk/tools'
+    }
   nvm(nvmInstallURL: 'https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh', nvmIoJsOrgMirror: 'https://iojs.org/dist', nvmNodeJsOrgMirror: 'https://nodejs.org/dist', version: '6.11.3') {
     stage('Installing dependencies') {
       sh 'npm install -g ionic'
