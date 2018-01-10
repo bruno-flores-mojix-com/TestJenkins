@@ -28,7 +28,7 @@ node() {
               // sh 'rm -rf node_modules'
               sh 'npm install'
               sh "ionic cordova platform rm android"
-              sh "ionic cordova platfrom rm ios"
+              sh "ionic cordova platform rm ios"
               sh "ionic cordova platform add android"
               sh "ionic cordova prepare android"
               sh "ionic cordova platform add ios"
